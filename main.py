@@ -2,7 +2,6 @@
 import asyncio
 import logging
 from datetime import datetime, date, time as dtime
-
 from aiogram import Bot, Dispatcher, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command, StateFilter
@@ -37,7 +36,7 @@ lang_data = {
         "error_time": "❌ Илтимос HH:MM форматда киритинг. Масалан: 14:30",
         "error_date": "❌ Илтимос YYYY-MM-DD форматда киритинг. Масалан: 2025-12-05",
         "time_passed": "❌ Эслатма вақти ўтиб кетган! Илтимос келажак вақт киритинг.",
-        "reminder_msg": "⏰ Эслатма!\n📝 Матн: {text}",
+        "reminder_msg": "⏰ Эслатма!\n {text}",
         "reminder_deleted": "✅ Эслатма ўчирилди!",
         "no_reminders": "📭 Сизда эслатмалар мавжуд эмас!",
         "cancel": "❌ Бекор қилиш",
@@ -62,7 +61,7 @@ lang_data = {
         "error_time": "❌ Формат HH:MM. Например: 14:30",
         "error_date": "❌ Формат YYYY-MM-DD. Например: 2025-12-05",
         "time_passed": "❌ Время прошло! Введите будущее время.",
-        "reminder_msg": "⏰ Напоминание!\n📝 Текст: {text}",
+        "reminder_msg": "⏰ Напоминание!\n {text}",
         "reminder_deleted": "✅ Удалено!",
         "no_reminders": "📭 Нет напоминаний.",
         "cancel": "❌ Отмена",
@@ -87,7 +86,7 @@ lang_data = {
         "error_time": "❌ Format HH:MM. Example: 14:30",
         "error_date": "❌ Format YYYY-MM-DD",
         "time_passed": "❌ Time passed. Choose future.",
-        "reminder_msg": "⏰ Reminder!\n📝 {text}",
+        "reminder_msg": "⏰ Reminder!\n {text}",
         "reminder_deleted": "✅ Deleted!",
         "no_reminders": "📭 No reminders.",
         "cancel": "❌ Cancel",
@@ -148,11 +147,11 @@ dp = Dispatcher(storage=MemoryStorage())
 async def clean_and_edit(callback: CallbackQuery, text: str, markup=None):
     try:
         await callback.message.edit_reply_markup(reply_markup=None)
-    except Exception:
+    except:
         pass
     try:
         await callback.message.edit_text(text, reply_markup=markup)
-    except Exception:
+    except:
         await callback.message.answer(text, reply_markup=markup)
 
 async def main_menu(user_id: int):
