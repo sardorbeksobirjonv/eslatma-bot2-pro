@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 # ---------- LANG DATA ----------
 lang_data = {
-    "uz": {
+    "uz": {  # Kiril
         "greet": "🌟 Салом! Тилни танланг:",
         "main_menu": "📌 Асосий меню:",
         "add_timer": "➕ Таймер қўшиш",
@@ -46,7 +46,32 @@ lang_data = {
         "today": "Бугун ✅",
         "future": "Келажак 📅"
     },
-    "ru": {
+    "oz": {  # Lotin
+        "greet": "🌟 Salom! Tilni tanlang:",
+        "main_menu": "📌 Asosiy menyu:",
+        "add_timer": "➕ Taymer qoʻshish",
+        "view_delete_timer": "🗑️ Taymerlarni koʻrish / oʻchirish",
+        "change_lang": "🌍 Tilni oʻzgartirish",
+        "set_type": "📌 Eslatma turini tanlang:",
+        "set_time": "⏰ Eslatma vaqtini kiriting (HH:MM):",
+        "choose_day": "📅 Bugun yoki kelajak sana?",
+        "set_date": "📅 Sanani kiriting (YYYY-MM-DD):",
+        "set_text": "📝 Eslatma matnini kiriting:",
+        "reminder_set": "✅ Eslatma muvaffaqiyatli oʻrnatildi!",
+        "error_time": "❌ HH:MM formatda kiriting. Masalan: 14:30",
+        "error_date": "❌ YYYY-MM-DD formatda kiriting. Masalan: 2025-12-05",
+        "time_passed": "❌ Eslatma vaqti oʻtib ketgan! Kelajak vaqt kiriting.",
+        "reminder_msg": "⏰ Eslatma!\n {text}",
+        "reminder_deleted": "✅ Eslatma oʻchirildi!",
+        "no_reminders": "📭 Eslatmalar mavjud emas!",
+        "cancel": "❌ Bekor qilish",
+        "private": "Shaxsiy",
+        "group": "Guruh",
+        "channel": "Kanal",
+        "today": "Bugun ✅",
+        "future": "Kelajak 📅"
+    },
+    "ru": {  # Rus
         "greet": "🌟 Привет! Выберите язык:",
         "main_menu": "📌 Главное меню:",
         "add_timer": "➕ Добавить таймер",
@@ -71,7 +96,7 @@ lang_data = {
         "today": "Сегодня ✅",
         "future": "Будущее 📅"
     },
-    "en": {
+    "en": {  # Ingliz
         "greet": "🌟 Hello! Choose language:",
         "main_menu": "📌 Main menu:",
         "add_timer": "➕ Add Timer",
@@ -176,11 +201,12 @@ async def edit_main_menu_callback(callback: CallbackQuery):
 @dp.message(Command("start"))
 async def start_handler(message: Message, state: FSMContext):
     kb = InlineKeyboardBuilder()
-    kb.button(text="🇺🇿 Оʻзбек (Кирил)", callback_data="lang_uz")
-    kb.button(text="🇷🇺 Русский", callback_data="lang_ru")
-    kb.button(text="🇬🇧 English", callback_data="lang_en")
-    kb.adjust(1)
-    await message.answer("🌍 Tilni tanlang:", reply_markup=kb.as_markup())
+    kb.button(text="🇺🇿 O’z", callback_data="lang_oz")
+    kb.button(text="🇺🇿 Ўз", callback_data="lang_uz")
+    kb.button(text="🇷🇺 Ru", callback_data="lang_ru")
+    kb.button(text="🇬🇧 En", callback_data="lang_en")
+    kb.adjust(2)
+    await message.answer("🌍 Tilni tanlang / Choose language:", reply_markup=kb.as_markup())
     await state.clear()
 
 @dp.callback_query(F.data.startswith("lang_"))
@@ -197,11 +223,12 @@ async def lang_selected(call: CallbackQuery):
 @dp.callback_query(F.data == "menu_lang")
 async def menu_lang(call: CallbackQuery):
     kb = InlineKeyboardBuilder()
-    kb.button(text="🇺🇿 Оʻзбек (Кирил)", callback_data="lang_uz")
-    kb.button(text="🇷🇺 Русский", callback_data="lang_ru")
-    kb.button(text="🇬🇧 English", callback_data="lang_en")
-    kb.adjust(1)
-    await clean_and_edit(call, "🌍 Tilni tanlang / Выберите язык / Choose language:", kb.as_markup())
+    kb.button(text="🇺🇿 O’z", callback_data="lang_oz")
+    kb.button(text="🇺🇿 Ўз", callback_data="lang_uz")
+    kb.button(text="🇷🇺 Ru", callback_data="lang_ru")
+    kb.button(text="🇬🇧 En", callback_data="lang_en")
+    kb.adjust(2)
+    await clean_and_edit(call, "🌍 Tilni tanlang / Choose language:", kb.as_markup())
     await call.answer()
 
 # ---------- MENU ADD / VIEW ----------
@@ -345,24 +372,12 @@ async def delete_timer(call: CallbackQuery, state: FSMContext):
     await call.answer()
 
 @dp.callback_query(StateFilter(ReminderStates.viewing), F.data == "cancel")
-async def cancel_viewing(call: CallbackQuery, state: FSMContext):
-    await state.clear()
+async def cancel_view(call: CallbackQuery, state: FSMContext):
     await edit_main_menu_callback(call)
+    await state.clear()
     await call.answer()
 
-# ---------- GLOBAL ERROR ----------
-@dp.errors()
-async def global_error_handler(update, exception):
-    logger.exception("Update caused error: %s", exception)
-    return True
-
-# ---------- MAIN ----------
-async def main():
-    logger.info("Bot ishlayapti...")
-    try:
-        await dp.start_polling(bot)
-    finally:
-        await bot.session.close()
-
+# ---------- RUN ----------
 if __name__ == "__main__":
-    asyncio.run(main())
+    logging.info("Bot ishlayapti...")
+    dp.run_polling(bot)
